@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List of Lucky Numbers</title>
+</head>
+<body>
+  <h1>List of Lucky Numbers</h1>
+  <ul id="luckyNumbersList"></ul>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io(); // Connect to the WebSocket server
+
+      // Function to update the list with new data
+      const updateList = (data) => {
+        const list = document.getElementById('luckyNumbersList');
+        list.innerHTML = ''; // Clear the existing list
+
+        // Iterate over the data and add list items to the unordered list
+        data.forEach(number => {
+          const listItem = document.createElement('li');
+          listItem.textContent = number.emp_id; // Adjust this based on your data structure
+          list.appendChild(listItem);
+        });
+      };
+
+      // Fetch initial data from the API endpoint
+      fetch('/api/listluckynumber')
+        .then(response => response.json())
+        .then(data => {
+          updateList(data);
+        })
+        .catch(error => console.error('Error fetching lucky numbers:', error));
+
+      // Listen for WebSocket updates
+      socket.on('luckyNumbersUpdated', (updatedData) => {
+        updateList(updatedData);
+      });
+    });
+  </script>
+</body>
+</html>
